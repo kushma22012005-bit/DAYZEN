@@ -1581,6 +1581,6 @@ app.use((error, req, res, next) => {
     message: error.message || "An unexpected server error occurred."
   });
 });
-app.listen(PORT, () => {
-  console.log(`DAYZEN server running at http\://localhost:${PORT}`);
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`DAYZEN server running on port ${PORT}`);
 });

@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DAYZEN — A calmer way to live</title>
+  <meta name="theme-color" content="#11121b">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    :root {
+      --bg: #11121b;
+      --panel: #191a27;
+      --panel2: #202133;
+      --text: #f5f4ff;
+      --muted: #a5a5bd;
+      --accent: #9385ff;
+      --border: rgba(255,255,255,.10);
+      --danger: #ff7979;
+      --success: #65d9a4;
+    }
+    body[data-theme="light"] {
+      --bg: #f4f3fb;
+      --panel: #ffffff;
+      --panel2: #eeedf8;
+      --text: #25233a;
+      --muted: #77758d;
+      --accent: #6958dc;
+      --border: rgba(40,35,80,.13);
+    }
+    body[data-theme="ocean"] {
+      --bg: #081a25;
+      --panel: #102936;
+      --panel2: #193746;
+      --text: #e8fbff;
+      --muted: #9cbcc7;
+      --accent: #54c9d9;
+      --border: rgba(255,255,255,.12);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      font-family: "DM Sans", sans-serif;
+      transition: background .25s, color .25s;
+    }
+    button, input, select, textarea { font: inherit; }
+    button { cursor: pointer; }
+    button:focus-visible, input:focus-visible, select:focus-visible,
+    textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .hidden { display: none !important; }
+    .muted { color: var(--muted); }
+    .small { font-size: .86rem; }
+    .brand { font: 800 1.5rem Manrope, sans-serif; letter-spacing: 2px; }
+    .brand span { color: var(--accent); }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      gap: 8px; padding: 11px 16px; border: 1px solid var(--border);
+      border-radius: 12px; background: var(--panel2); color: var(--text);
+      font-weight: 700; text-decoration: none; transition: .2s;
+    }
+    .btn:hover { transform: translateY(-1px); filter: brightness(1.08); }
+    .btn.primary { background: var(--accent); color: #fff; border-color: transparent; }
+    .btn.danger { color: var(--danger); }
+    .btn.full { width: 100%; }
+    .btn.small-btn { padding: 7px 10px; font-size: .82rem; }
+    .field { display: grid; gap: 7px; margin: 13px 0; }
+    .field label { font-size: .9rem; color: var(--muted); }
+    input, select, textarea {
+      width: 100%; padding: 12px 13px; border-radius: 11px;
+      border: 1px solid var(--border); background: var(--bg);
+      color: var(--text); min-width: 0;
+    }
+    textarea { min-height: 90px; resize: vertical; }
+    .card {
+      background: var(--panel); border: 1px solid var(--border);
+      border-radius: 19px; padding: 20px; min-width: 0;
+      box-shadow: 0 12px 35px rgba(0,0,0,.07);
+    }
+    .public-top {
+      max-width: 1150px; margin: auto; padding: 24px;
+      display: flex; justify-content: space-between; align-items: center; gap: 18px;
+    }
+    .public-hero {
+      max-width: 1150px; margin: auto; padding: 70px 24px 100px;
+      display: grid; grid-template-columns: 1.2fr .8fr; gap: 45px; align-items: center;
+    }
+    .hero-title {
+      font: 800 clamp(2.7rem, 6vw, 5.2rem)/1.05 Manrope, sans-serif;
+      letter-spacing: -3px; margin: 16px 0;
+    }
+    .hero-title span { color: var(--accent); }
+    .hero-copy { color: var(--muted); line-height: 1.8; max-width: 600px; }
+    .eyebrow {
+      display: inline-block; border: 1px solid var(--border);
+      color: var(--accent); padding: 7px 12px; border-radius: 99px;
+      font-size: .8rem; font-weight: 700;
+    }
+    .hero-visual {
+      min-height: 350px; position: relative; overflow: hidden;
+      display: grid; place-items: center;
+      background: radial-gradient(circle at 45% 40%, #8170ff44, transparent 55%), var(--panel);
+      border: 1px solid var(--border); border-radius: 30px;
+    }
+    .orb {
+      width: 180px; height: 180px; border-radius: 50%;
+      background: radial-gradient(circle at 30% 25%, #e6e0ff, #9c8bff 35%, #5a49b7 72%, #29214d);
+      box-shadow: 0 0 80px #8876ff66;
+      animation: float 5s ease-in-out infinite;
+    }
+    .orb-ring {
+      position: absolute; width: 260px; height: 260px;
+      border: 1px solid #a79bff66; border-radius: 50%;
+      animation: spin 20s linear infinite;
+    }
+    .orb-ring::after {
+      content: ""; position: absolute; top: 30px; left: 25px;
+      width: 13px; height: 13px; border-radius: 50%; background: var(--accent);
+    }
+    @keyframes float { 50% { transform: translateY(-14px) scale(1.03); } }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .hero-features { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-top: 30px; }
+    .feature { padding: 16px; background: var(--panel); border: 1px solid var(--border); border-radius: 15px; }
+    .feature strong { display: block; margin-bottom: 5px; }
+    .auth-wrap { min-height: 100vh; padding: 25px; display: grid; place-items: center; }
+    .auth-card { width: min(100%, 460px); }
+    .auth-card h1 { font: 800 2rem Manrope, sans-serif; margin-bottom: 8px; }
+    .auth-tabs { display: flex; flex-wrap: wrap; gap: 7px; margin: 20px 0; }
+    .auth-tabs button { flex: 1; min-width: 75px; }
+    .auth-tabs button.active { background: var(--accent); color: white; }
+    .message { padding: 11px 13px; border-radius: 10px; margin: 12px 0; font-size: .9rem; }
+    .message.error { color: #ffaaaa; background: #ff555514; border: 1px solid #ff777733; }
+    .message.success { color: var(--success); background: #55d9a414; border: 1px solid #55d9a433; }
+    .app-shell { min-height: 100vh; display: grid; grid-template-columns: 250px minmax(0,1fr); }
+    .sidebar {
+      position: sticky; top: 0; height: 100vh; overflow-y: auto;
+      padding: 22px 15px; border-right: 1px solid var(--border);
+      background: var(--panel);
+    }
+    .sidebar .brand { padding: 8px 12px 25px; display: block; }
+    .profile {
+      display: flex; gap: 10px; align-items: center; padding: 12px;
+      background: var(--panel2); border-radius: 14px; margin-bottom: 20px;
+    }
+    .avatar {
+      display: grid; place-items: center; width: 40px; height: 40px;
+      border-radius: 13px; background: var(--accent); color: white; font-weight: 800;
+    }
+    .nav-label { font-size: .72rem; color: var(--muted); padding: 12px; text-transform: uppercase; letter-spacing: 1.4px; }
+    .nav-btn {
+      display: flex; align-items: center; gap: 12px; width: 100%;
+      text-align: left; padding: 11px 12px; margin: 3px 0;
+      border: 0; border-radius: 11px; background: transparent; color: var(--muted);
+    }
+    .nav-btn:hover, .nav-btn.active { background: var(--panel2); color: var(--text); }
+    .nav-btn.active { box-shadow: inset 3px 0 var(--accent); }
+    .sidebar-bottom { margin-top: 20px; padding-top: 14px; border-top: 1px solid var(--border); }
+    .main { min-width: 0; padding: 26px clamp(16px,3vw,38px) 50px; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; gap: 15px; margin-bottom: 28px; }
+    .topbar h1 { font: 800 clamp(1.5rem,3vw,2rem) Manrope, sans-serif; margin: 0 0 5px; }
+    .grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 15px; }
+    .stat-number { font: 800 2rem Manrope, sans-serif; margin: 12px 0 5px; }
+    .stat-icon { font-size: 1.4rem; }
+    .section-title { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 25px 0 14px; }
+    .section-title h2, .card h2 { font: 700 1.1rem Manrope, sans-serif; margin-top: 0; }
+    .row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .stack { display: grid; gap: 12px; }
+    .task-item, .record-item, .user-item {
+      display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+      padding: 14px; border: 1px solid var(--border); border-radius: 13px;
+      background: var(--panel2); margin: 9px 0;
+    }
+    .task-item.completed .task-title { text-decoration: line-through; color: var(--muted); }
+    .task-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+    .tag { display: inline-block; padding: 4px 8px; border-radius: 99px; font-size: .75rem; background: #9385ff22; color: var(--accent); }
+    .empty { padding: 25px 12px; text-align: center; color: var(--muted); }
+    .inline-check { display: flex; align-items: center; gap: 9px; color: var(--muted); font-size: .9rem; }
+    .inline-check input { width: auto; }
+    .two-col { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 15px; }
+    .hamburger { display: none; }
+    .admin-user-details { padding: 14px; border: 1px solid var(--border); border-radius: 12px; margin-top: 10px; }
+    .footer-note { margin-top: 20px; font-size: .8rem; color: var(--muted); }
+    @media(max-width:900px) {
+      .app-shell { grid-template-columns: 1fr; }
+      .sidebar { position: fixed; z-index: 10; left: -270px; width: 250px; transition: left .25s; box-shadow: 15px 0 40px #0003; }
+      .sidebar.open { left: 0; }
+      .hamburger { display: inline-flex; }
+      .public-hero { grid-template-columns: 1fr; padding-top: 35px; }
+      .hero-visual { min-height: 260px; }
+    }
+    @media(max-width:650px) {
+      .grid, .two-col, .hero-features { grid-template-columns: 1fr; }
+      .topbar { align-items: flex-start; }
+      .main { padding: 18px 13px 35px; }
+      .public-top { padding: 18px; }
+      .hero-title { letter-spacing: -1.5px; }
+      .task-item, .record-item, .user-item { flex-direction: column; }
+    }
+    @media(prefers-reduced-motion:reduce) {
+      *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body data-theme="dark">
+
+  <!-- PUBLIC LANDING PAGE -->
+  <section id="welcomeScreen">
+    <header class="public-top">
+      <div class="brand">DAY<span>ZEN</span></div>
+      <div class="row">
+        <button class="btn" data-open-auth="login">Log in</button>
+        <button class="btn primary" data-open-auth="signup">Create account</button>
+      </div>
+    </header>
+
+    <main class="public-hero">
+      <div>
+        <span class="eyebrow">YOUR PERSONAL LIFE COMPANION</span>
+        <h1 class="hero-title">Make space for<br>a <span>calmer life.</span></h1>
+        <p class="hero-copy">Bring your tasks, routines, family responsibilities, health notes, money plans and goals into one simple space. Organise your day without adding more stress to it.</p>
+        <div class="row" style="justify-content:flex-start;flex-wrap:wrap;margin-top:25px">
+          <button class="btn primary" data-open-auth="signup">Get started →</button>
+          <button class="btn" data-open-auth="login">I already have an account</button>
+        </div>
+        <div class="hero-features">
+          <div class="feature"><strong>✓ Daily focus</strong><span class="muted small">Keep tasks organised.</span></div>
+          <div class="feature"><strong>◷ Gentle reminders</strong><span class="muted small">Remember important deadlines.</span></div>
+          <div class="feature"><strong>⌂ Life in one place</strong><span class="muted small">Keep your plans together.</span></div>
+        </div>
+      </div>
+      <div class="hero-visual" aria-label="Animated DAYZEN illustration">
+        <div class="orb-ring"></div><div class="orb"></div>
+      </div>
+    </main>
+  </section>
+
+  <!-- AUTHENTICATION -->
+  <section id="authScreen" class="auth-wrap hidden">
+    <div class="card auth-card">
+      <button class="btn small-btn" data-page="welcome">← Back home</button>
+      <div class="brand" style="margin-top:20px">DAY<span>ZEN</span></div>
+      <h1 id="authTitle">Welcome back</h1>
+      <p class="muted" id="authSubtitle">Sign in and continue your day.</p>
+      <div id="authMessage" class="hidden" role="status" aria-live="polite"></div>
+
+      <div class="auth-tabs">
+        <button class="btn active" data-auth-tab="login">Login</button>
+        <button class="btn" data-auth-tab="signup">Create account</button>
+      </div>
+
+      <form id="loginForm" data-auth-form="login">
+        <div class="field"><label for="loginEmail">Email address</label><input id="loginEmail" name="email" type="email" autocomplete="email" required></div>
+        <div class="field"><label for="loginPassword">Password</label><input id="loginPassword" name="password" type="password" autocomplete="current-password" required></div>
+        <button class="btn primary full" type="submit">Log in to DAYZEN</button>
+        <p class="small"><button class="btn small-btn" type="button" data-auth-tab="forgot">Forgot password?</button></p>
+        <p class="small muted">Administrator? <button class="btn small-btn" type="button" data-show-admin-login>Admin login</button></p>
+      </form>
+
+      <form id="signupForm" data-auth-form="signup" class="hidden">
+        <div class="field"><label for="signupName">Your name</label><input id="signupName" name="name" autocomplete="name" maxlength="80" required></div>
+        <div class="field"><label for="signupEmail">Email address</label><input id="signupEmail" name="email" type="email" autocomplete="email" required></div>
+        <div class="field"><label for="signupPassword">Create password (at least 8 characters)</label><input id="signupPassword" name="password" type="password" minlength="8" autocomplete="new-password" required></div>
+        <div class="field"><label for="signupCategory">Which best describes you?</label>
+          <select id="signupCategory" name="category" required>
+            <option value="student">Student</option><option value="employed">Employed</option>
+            <option value="unemployed">Unemployed</option><option value="other" selected>Other</option>
+          </select>
+        </div>
+        <button class="btn primary full" type="submit">Create account &amp; verify email</button>
+        <p class="muted small">We will email you a verification code that expires in 50 seconds.</p>
+      </form>
+
+      <form id="verifyForm" data-auth-form="verify" class="hidden">
+        <p class="muted small">Enter the verification code sent to your email.</p>
+        <div class="field"><label for="verifyEmail">Email address</label><input id="verifyEmail" name="email" type="email" required></div>
+        <div class="field"><label for="verifyOtp">6-digit verification code</label><input id="verifyOtp" name="otp" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" required></div>
+        <p id="verifyCountdown" class="muted small">Code expires in 50 seconds.</p>
+        <button class="btn primary full" type="submit">Verify email</button>
+        <p class="small"><button type="button" class="btn small-btn" data-auth-tab="signup">Back to sign up</button></p>
+      </form>
+
+      <form id="forgotForm" data-auth-form="forgot" class="hidden">
+        <p class="muted small">We'll send a password-reset code if an account exists for that email.</p>
+        <div class="field"><label for="forgotEmail">Email address</label><input id="forgotEmail" name="email" type="email" required></div>
+        <button class="btn primary full" type="submit">Send reset code</button>
+        <p class="small"><button type="button" class="btn small-btn" data-auth-tab="reset">I have a reset code</button></p>
+      </form>
+
+      <form id="resetForm" data-auth-form="reset" class="hidden">
+        <div class="field"><label for="resetEmail">Email address</label><input id="resetEmail" name="email" type="email" required></div>
+        <div class="field"><label for="resetOtp">6-digit reset code</label><input id="resetOtp" name="otp" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" required></div>
+        <div class="field"><label for="newPassword">New password (at least 8 characters)</label><input id="newPassword" name="newPassword" type="password" minlength="8" autocomplete="new-password" required></div>
+        <button class="btn primary full" type="submit">Reset password</button>
+      </form>
+
+      <form id="adminLoginForm" class="hidden">
+        <div class="field"><label for="adminEmail">Administrator email</label><input id="adminEmail" name="email" type="email" required></div>
+        <div class="field"><label for="adminCode">Administrator access code</label><input id="adminCode" name="adminCode" type="password" required></div>
+        <button class="btn primary full" type="submit">Sign in as administrator</button>
+        <p class="small"><button type="button" class="btn small-btn" data-auth-tab="login">Back to login</button></p>
+      </form>
+    </div>
+  </section>
+
+  <!-- MAIN APP -->
+  <section id="appScreen" class="app-shell hidden">
+    <aside id="sidebar" class="sidebar">
+      <div class="brand">DAY<span>ZEN</span></div>
+      <div class="profile">
+        <div class="avatar" id="profileAvatar">D</div>
+        <div><strong id="profileName">Welcome</strong><div class="muted small" id="profileCategory">Member</div></div>
+      </div>
+      <div class="nav-label">Your space</div>
+      <nav id="appNav">
+        <button class="nav-btn active" data-app-page="overview">◈ Overview</button>
+        <button class="nav-btn" data-app-page="tasks">✓ My tasks</button>
+        <button class="nav-btn" data-app-page="family">⌂ Family &amp; home</button>
+        <button class="nav-btn" data-app-page="calendar">▦ Calendar</button>
+        <button class="nav-btn" data-app-page="health">♡ Health</button>
+        <button class="nav-btn" data-app-page="money">₹ Money</button>
+        <button class="nav-btn" data-app-page="bills">▤ Bills &amp; EMI</button>
+        <button class="nav-btn" data-app-page="goals">⚑ Goals</button>
+        <button class="nav-btn" data-app-page="shopping">🛒 Shopping</button>
+        <button class="nav-btn" data-app-page="activities">✧ Activities</button>
+        <button class="nav-btn" data-app-page="feedback">☆ Feedback</button>
+        <button class="nav-btn" data-app-page="settings">⚙ Settings</button>
+        <button class="nav-btn hidden" id="adminNav" data-app-page="admin">♙ Admin dashboard</button>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="field"><label for="themeSelect">Appearance</label>
+          <select id="themeSelect">
+            <option value="dark">Dark</option><option value="light">Light</option><option value="ocean">Ocean</option>
+          </select>
+        </div>
+        <button class="nav-btn" data-action="logout">↪ Log out</button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="row" style="justify-content:flex-start">
+          <button class="btn hamburger" id="menuToggle" aria-label="Toggle navigation">☰</button>
+          <div><h1 id="pageHeading">Your overview</h1><p id="todayLabel" class="muted small"></p></div>
+        </div>
+        <button class="btn" data-action="logout">Log out</button>
+      </header>
+
+      <div id="appMessage" class="hidden" role="status" aria-live="polite"></div>
+
+      <section class="app-page" data-app-screen="overview">
+        <div class="grid">
+          <div class="card"><div class="stat-icon">✓</div><div class="stat-number" id="totalTasks">0</div><div class="muted">Total tasks</div></div>
+          <div class="card"><div class="stat-icon">✧</div><div class="stat-number" id="completedTasks">0</div><div class="muted">Completed</div></div>
+          <div class="card"><div class="stat-icon">◷</div><div class="stat-number" id="pendingTasks">0</div><div class="muted">Still to do</div></div>
+        </div>
+        <div class="section-title"><h2>Today's focus</h2><button class="btn primary" data-app-page="tasks">+ Add a task</button></div>
+        <div class="card"><div id="overviewTasks" class="stack"><div class="empty">Your tasks will appear here.</div></div></div>
+        <div class="section-title"><h2>Your personal space</h2></div>
+        <div class="grid">
+          <button class="card" data-app-page="family" style="text-align:left;color:var(--text)"><strong>⌂ Family &amp; home</strong><p class="muted small">Home notes and responsibilities.</p></button>
+          <button class="card" data-app-page="money" style="text-align:left;color:var(--text)"><strong>₹ Money</strong><p class="muted small">Track your personal records.</p></button>
+          <button class="card" data-app-page="goals" style="text-align:left;color:var(--text)"><strong>⚑ Goals</strong><p class="muted small">Keep your goals in sight.</p></button>
+        </div>
+      </section>
+
+      <section class="app-page hidden" data-app-screen="tasks">
+        <div class="two-col">
+          <div class="card">
+            <h2>Create a task</h2>
+            <form id="taskForm">
+              <div class="field"><label for="taskTitle">Task title</label><input id="taskTitle" name="title" maxlength="200" required placeholder="What do you need to do?"></div>
+              <div class="field"><label for="taskCategory">Category</label><select id="taskCategory" name="category"><option>Personal</option><option>Study</option><option>Work</option><option>Family</option><option>Health</option><option>Finance</option><option>Other</option></select></div>
+              <div class="field"><label for="taskDuration">Estimated duration</label><input id="taskDuration" name="duration" value="30 minutes"></div>
+              <div class="field"><label for="taskTime">Preferred time (optional)</label><input id="taskTime" name="time" placeholder="e.g. 6:00 PM"></div>
+              <div class="field"><label for="taskDeadline">Deadline (required for email reminders)</label><input id="taskDeadline" name="deadlineAt" type="datetime-local"></div>
+              <label class="inline-check"><input id="taskNotification" name="notification" type="checkbox"> Email me deadline reminders</label>
+              <div class="field"><label for="taskAttachment">Attachment (optional, up to 15 MB)</label><input id="taskAttachment" name="file" type="file" accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.txt,.csv,.jpg,.jpeg,.png,.zip"></div>
+              <button class="btn primary full" type="submit">Save task</button>
+            </form>
+          </div>
+          <div class="card"><div class="section-title" style="margin-top:0"><h2>Your tasks</h2><select id="taskFilter" style="max-width:140px"><option value="all">All tasks</option><option value="pending">Pending</option><option value="completed">Completed</option></select></div><div id="taskList" class="stack"><div class="empty">Loading tasks…</div></div></div>
+        </div>
+      </section>
+
+      <section class="app-page hidden" data-app-screen="family">
+        <div class="card"><h2>Family &amp; home</h2><p class="muted">Keep household plans and responsibilities together.</p>
+          <form data-record-form="family">
+            <div class="field"><label>Record type</label><select name="type"><option>Household responsibility</option><option>Family event</option><option>Grocery list</option><option>Home maintenance</option><option>Home note</option></select></div>
+            <div class="field"><label>Title</label><input name="title" required maxlength="150" placeholder="e.g. Buy groceries"></div>
+            <div class="field"><label>Date (optional)</label><input name="date" type="date"></div>
+            <div class="field"><label>Details</label><textarea name="details" placeholder="Add any details…"></textarea></div>
+            <button class="btn primary" type="submit">Save record</button>
+          </form><div class="section-title"><h2>Saved records</h2></div><div id="records-family"></div>
+        </div>
+      </section>
+
+      <section class="app-page hidden" data-app-screen="calendar">
+        <div class="card"><h2>Calendar &amp; reminders</h2><form data-record-form="calendar">
+          <div class="field"><label>Event title</label><input name="title" required maxlength="150"></div>
+          <div class="field"><label>Date</label><input name="date" type="date" required></div>
+          <div class="field"><label>Time (optional)</label><input name="time" type="time"></div>
+          <div class="field"><label>Details</label><textarea name="details"></textarea></div>
+          <button class="btn primary" type="submit">Save event</button>
+        </form><div class="section-title"><h2>Upcoming events</h2></div><div id="records-calendar"></div></div>
+      </section>
+
+      <section class="app-page hidden" data-app-screen="health">
+        <div class="card"><h2>Health &amp; wellbeing</h2><p class="muted small">Personal notes only; this is not medical advice.</p><form data-record-form="health">
+          <div class="field"><label>Record title</label><input name="title" required maxlength="150" placeholder="e.g. Walk, appointment, sleep note"></div>
+          <div class="field"><label>Date</label><input name="date" type="date"></div>
+          <div class="field"><label>Details</label><textarea name="details"></textarea></div>
+          <button class="btn primary" type="submit">Save health note</button>
+        </form><div class="section-title"><h2>Saved notes</h2></div><div id="records-health"></div></div>
+      </section>
+
+      <section class="app-page hidden" data-app-screen="money">
+        <div class="card"><h2>Money tracker</h2><form data-record-form="money">
+          <div class="field"><label>Record title</label><input name="title" required maxlength="150" placeholder="e.g. Monthly savings"></div>
+          <div class="field"><label>Amount (₹)</label><input name="amount" type="number" min="0" step="0.01"></div>
+          <div class="field"><label>Type</label><select name="type"><option>Income</option><option>Expense</option><option>Savings</option></select></div>
+          <div class="field"><label>Date</label><input name="date" type="date"></div>
+          <div class="field"><label>Details</label><textarea name="details"></textarea></div>
+          <button class="btn primary" type="submit">Save money record</button>
+        </form><div class="section-title"><h2>Saved records</h2></div><div id="records-money"></div></div>
+      </section>
+
+      <section class="app-page hidden" data-app-screen="bills">
+        <div class="card"><h2>Bills, EMI &amp; rent</h2><form data-record-form="bills">
+          <div class="field"><label>Bill or payment title</label><input name="title" required maxlength="150" placeholder="e.g. Rent, electricity, EMI"></div>
+          <div class="field"><label>Amount (₹)</label><input name="amount" type="number" min="0" step="0.01"></div>
+          <div class="field"><label>Due date</label><input name="date" type="date"></div>
+          <div class="field"><label>Status</label><select name="type"><option>Pending</option><option>Paid</option></select></div>
+          <div class="field"><label>Details</label><textarea name="details"></textarea></div>
+          <button class="btn primary" type="submit">Save payment</button>
+        </form><div class="section-title"><h2>Saved payments</h2></div><div id="records-bills"></div></div>
+      </section>
+
+      <section class="app-page hidden" data-app-screen="goals">
+        <div class="card"><h2>Goals</h2><form data-record-form="goals">
+          <div class="field"><label>Goal</label><input name="title" required maxlength="150" placeholder="What would you like to achieve?"></div>
+          <div class="field"><label>Target date</label><input name="date" type="date"></div>
+          <div class="field"><label>Progress</label><select name="type"><option>Not started</option><option>In progress</option><option>Completed</option></select></div>
+          <div class="field"><label>Details</label><textarea name="details"></textarea></div>
+          <button class="btn primary" type="submit">Save goal</button>
+        </form><div class="section-title"><h2>Your goals</h2></div><div id="records-goals"></div></div>
+      </section>
+
+      <section class="app-page hidden" data-app-screen="shopping">
+        <div class="card"><h2>Shopping list</h2><form data-record-form="shopping">
+          <div class="field"><label>Item</label><input name="title" required maxlength="150" placeholder="What do you need?"></div>
+          <div class="field"><label>Quantity / budget</label><input name="amount" placeholder="e.g. 2 packs or ₹500"></div>
+          <div class="field"><label>Status</label><select name="type"><option>To buy</option><option>Bought</option></select></div>
+          <div class="field"><label>Details</label><textarea name="details"></textarea></div>
+          <button class="btn primary" type="submit">Add item</button>
+        </form><div class="section-title"><h2>Shopping items</h2></div><div id="records-shopping"></div></div>
+      </section>
+
+      <section class="app-page hidden" data-app-screen="activities">
+        <div class="card"><h2>Activities &amp; routines</h2><form data-record-form="activities">
+          <div class="field"><label>Activity</label><input name="title" required maxlength="150" placeholder="e.g. Reading, exercise, meditation"></div>
+          <div class="field"><label>Date</label><input name="date" type="date"></div>
+          <div class="field"><label>Time</label><input name="time" type="time"></div>
+          <div class="field"><label>Details</label><textarea name="details"></textarea></div>
+          <button class="btn primary" type="submit">Save activity</button>
+        </form><div class="section-title"><h2>Saved activities</h2></div><div id="records-activities"></div></div>
+      </section>
+
+      <section class="app-page hidden" data-app-screen="feedback">
+        <div class="card"><h2>Share your feedback</h2><p class="muted">Tell us how DAYZEN can be more useful for you.</p>
+          <form id="feedbackForm">
+            <div class="field"><label>Your rating</label><select name="rating" required><option value="5">★★★★★ — Excellent</option><option value="4">★★★★ — Good</option><option value="3">★★★ — Okay</option><option value="2">★★ — Needs improvement</option><option value="1">★ — Poor</option></select></div>
+            <div class="field"><label>Comments</label><textarea name="comments" required maxlength="2000"></textarea></div>
+            <button class="btn primary" type="submit">Save feedback</button>
+          </form><div id="feedbackList" class="stack"></div>
+        </div>
+      </section>
+
+      <section class="app-page hidden" data-app-screen="settings">
+        <div class="card"><h2>Settings</h2>
+          <div class="field"><label for="settingsTheme">Appearance</label><select id="settingsTheme"><option value="dark">Dark</option><option value="light">Light</option><option value="ocean">Ocean</option></select></div>
+          <label class="inline-check"><input type="checkbox" id="reduceMotion"> Reduce animations</label>
+          <div class="section-title"><h2>Your data</h2></div>
+          <p class="muted small">Export the personal records stored in this browser and your task list from the server.</p>
+          <button class="btn primary" id="exportData" type="button">Export my data as PDF</button>
+          <div class="footer-note">Email and password changes are handled securely by the DAYZEN server.</div>
+        </div>
+      </section>
+
+      <section class="app-page hidden" data-app-screen="admin">
+        <div class="card">
+          <h2>Administrator dashboard</h2>
+          <p class="muted small">Only emails configured in the server's ADMIN_EMAILS setting can access this information.</p>
+          <div id="adminRestricted" class="hidden">
+            <p>Admin access is required. Log out and use Administrator login from the login screen.</p>
+          </div>
+          <div id="adminLoading" class="hidden">Loading administrator data…</div>
+          <div id="adminError" class="message error hidden"></div>
+          <div id="adminDashboard">
+            <div class="grid">
+              <div class="card"><div class="muted">Users</div><div id="adminTotalUsers" class="stat-number">—</div></div>
+              <div class="card"><div class="muted">Tasks</div><div id="adminTotalTasks" class="stat-number">—</div></div>
+              <div class="card"><div class="muted">Completed tasks</div><div id="adminCompletedTasks" class="stat-number">—</div></div>
+            </div>
+            <div class="field"><label for="adminSearch">Search users</label><input id="adminSearch" placeholder="Search by name or email"></div>
+            <div id="adminUsers" class="stack"></div>
+            <div id="adminUserDetails"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </section>
+
+  <script src="script.js"></script>
+</body>
+</html>

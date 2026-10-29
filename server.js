@@ -158,20 +158,17 @@ const EMAIL_APP_PASSWORD = process.env.EMAIL_APP_PASSWORD;
 
 
 const transporter = nodemailer.createTransport({
-
-  service: "gmail",
-
-  auth: {
-
-    user: EMAIL_USER,
-
-    pass: EMAIL_APP_PASSWORD
-
-  }
-
+  host: "smtp.gmail.com",
+  port: 465,
+  secure: true,
+  auth: {
+    user: EMAIL_USER,
+    pass: EMAIL_APP_PASSWORD
+  },
+  connectionTimeout: 20000,
+  greetingTimeout: 20000,
+  socketTimeout: 20000
 });
-
-
 
 if (EMAIL_USER && EMAIL_APP_PASSWORD) {
 
